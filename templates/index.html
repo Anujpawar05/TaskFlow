@@ -17,6 +17,25 @@
         Organize your daily tasks efficiently
     </p>
 
+    <div class="dashboard">
+
+    <div class="card">
+        <h3>{{ total_tasks }}</h3>
+        <p>Total Tasks</p>
+    </div>
+
+    <div class="card">
+        <h3>{{ pending_tasks }}</h3>
+        <p>Pending</p>
+    </div>
+
+    <div class="card">
+        <h3>{{ completed_tasks }}</h3>
+        <p>Completed</p>
+    </div>
+
+</div>
+
     <form action="/" method="POST">
 
         <label for="title">Title</label>

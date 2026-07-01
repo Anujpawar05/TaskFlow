@@ -11,7 +11,6 @@ def home():
     if request.method == "POST":
 
         title = request.form["title"]
-
         description = request.form["description"]
 
         new_task = Task(
@@ -26,20 +25,35 @@ def home():
 
     tasks = Task.query.all()
 
+    total_tasks = Task.query.count()
+
+    pending_tasks = Task.query.filter_by(
+        status="Pending"
+    ).count()
+
+    completed_tasks = Task.query.filter_by(
+        status="Completed"
+    ).count()
+
     return render_template(
         "index.html",
-        tasks=tasks
+        tasks=tasks,
+        total_tasks=total_tasks,
+        pending_tasks=pending_tasks,
+        completed_tasks=completed_tasks
     )
+
+
 @main.route("/delete/<int:id>")
 def delete_task(id):
 
     task = Task.query.get_or_404(id)
 
     db.session.delete(task)
-
     db.session.commit()
 
     return redirect("/")
+
 
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_task(id):
@@ -49,7 +63,6 @@ def edit_task(id):
     if request.method == "POST":
 
         task.title = request.form["title"]
-
         task.description = request.form["description"]
 
         db.session.commit()
