@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect
+from sqlalchemy import or_
 
 from .models import db, Task
 
@@ -7,6 +8,8 @@ main = Blueprint("main", __name__)
 
 @main.route("/", methods=["GET", "POST"])
 def home():
+
+    # Add Task
 
     if request.method == "POST":
 
@@ -23,25 +26,36 @@ def home():
 
         return redirect("/")
 
-    # -------------------------
-    # Search
-    # -------------------------
+    # Search & Status Filter
+    
 
     search = request.args.get("search", "").strip()
+    status = request.args.get("status", "").strip()
+
+    query = Task.query
+
+    # Search by title OR description
 
     if search:
 
-        tasks = Task.query.filter(
-            Task.title.ilike(f"%{search}%")
-        ).all()
+        query = query.filter(
 
-    else:
+            or_(
+                Task.title.ilike(f"%{search}%"),
+                Task.description.ilike(f"%{search}%")
+            )
 
-        tasks = Task.query.all()
+        )
 
-    # -------------------------
+    # Filter by status
+
+    if status:
+
+        query = query.filter_by(status=status)
+
+    tasks = query.all()
+
     # Dashboard Statistics
-    # -------------------------
 
     total_tasks = Task.query.count()
 
@@ -53,6 +67,8 @@ def home():
         status="Completed"
     ).count()
 
+    # Render Home Page
+
     return render_template(
         "index.html",
         tasks=tasks,
@@ -60,6 +76,9 @@ def home():
         pending_tasks=pending_tasks,
         completed_tasks=completed_tasks
     )
+
+
+# Delete Task
 
 
 @main.route("/delete/<int:id>")
@@ -71,6 +90,9 @@ def delete_task(id):
     db.session.commit()
 
     return redirect("/")
+
+
+# Edit Task
 
 
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
@@ -92,6 +114,8 @@ def edit_task(id):
         task=task
     )
 
+
+# Toggle Status
 
 @main.route("/toggle/<int:id>")
 def toggle_task(id):

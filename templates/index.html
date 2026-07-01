@@ -11,143 +11,245 @@
 
 <body>
 
-    <h1>TaskFlow</h1>
+<div class="container">
 
-    <p class="subtitle">
-        Organize your daily tasks efficiently
-    </p>
+    <!-- Header -->
+
+    <header class="header">
+
+        <h1>TaskFlow</h1>
+
+        <p>
+            Organize your daily work efficiently.
+        </p>
+
+    </header>
 
     <!-- Dashboard -->
 
-    <div class="dashboard">
+    <section class="dashboard">
 
         <div class="card">
-            <h3>{{ total_tasks }}</h3>
-            <p>Total Tasks</p>
+
+            <h2>{{ total_tasks }}</h2>
+
+            <span>Total Tasks</span>
+
         </div>
 
-        <div class="card">
-            <h3>{{ pending_tasks }}</h3>
-            <p>Pending</p>
+        <div class="card pending">
+
+            <h2>{{ pending_tasks }}</h2>
+
+            <span>Pending</span>
+
         </div>
 
-        <div class="card">
-            <h3>{{ completed_tasks }}</h3>
-            <p>Completed</p>
+        <div class="card completed">
+
+            <h2>{{ completed_tasks }}</h2>
+
+            <span>Completed</span>
+
+        </div>
+
+    </section>
+
+    <!-- Search -->
+
+    <section class="search-section">
+
+        <form
+            action="/"
+            method="GET"
+            class="search-form">
+
+            <input
+                type="text"
+                name="search"
+                placeholder="🔍 Search tasks..."
+                value="{{ request.args.get('search','') }}">
+
+            <button type="submit">
+                Search
+            </button>
+
+            <a
+                href="{{ url_for('main.home') }}"
+                class="clear-btn">
+
+                Clear
+
+            </a>
+
+        </form>
+
+    </section>
+
+    <!-- Filters -->
+
+    <section class="filters">
+
+        <a
+            href="{{ url_for('main.home', search=request.args.get('search','')) }}"
+            class="{% if not request.args.get('status') %}active-filter{% endif %}">
+
+            All
+
+        </a>
+
+        <a
+            href="{{ url_for('main.home', search=request.args.get('search',''), status='Pending') }}"
+            class="{% if request.args.get('status')=='Pending' %}active-filter{% endif %}">
+
+            Pending
+
+        </a>
+
+        <a
+            href="{{ url_for('main.home', search=request.args.get('search',''), status='Completed') }}"
+            class="{% if request.args.get('status')=='Completed' %}active-filter{% endif %}">
+
+            Completed
+
+        </a>
+
+    </section>
+
+    <!-- Add Task -->
+
+    <section class="add-task">
+
+        <h2>Add New Task</h2>
+
+        <form action="/" method="POST">
+
+            <label>
+
+                Title
+
+            </label>
+
+            <input
+                type="text"
+                name="title"
+                placeholder="Enter task title..."
+                required>
+
+            <label>
+
+                Description
+
+            </label>
+
+            <textarea
+                name="description"
+                rows="5"
+                placeholder="Enter task description..."
+                required></textarea>
+
+            <button type="submit">
+
+                + Add Task
+
+            </button>
+
+        </form>
+
+    </section>
+
+    <!-- Task List -->
+
+    <section class="tasks">
+
+        <h2>Your Tasks</h2>
+        {% if tasks %}
+
+    {% for task in tasks %}
+
+    <div class="task-card">
+
+        <div class="task-top">
+
+            <div>
+
+                <h3>{{ task.title }}</h3>
+
+                <p class="description">
+                    {{ task.description }}
+                </p>
+
+            </div>
+
+            {% if task.status == "Pending" %}
+
+                <span class="badge pending-badge">
+                    🟡 Pending
+                </span>
+
+            {% else %}
+
+                <span class="badge completed-badge">
+                    🟢 Completed
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <div class="task-actions">
+
+            <a
+                href="{{ url_for('main.toggle_task', id=task.id) }}"
+                class="btn complete-btn">
+
+                {% if task.status == "Pending" %}
+                    ✓ Complete
+                {% else %}
+                    ↺ Pending
+                {% endif %}
+
+            </a>
+
+            <a
+                href="{{ url_for('main.edit_task', id=task.id) }}"
+                class="btn edit-btn">
+
+                ✏ Edit
+
+            </a>
+
+            <a
+                href="{{ url_for('main.delete_task', id=task.id) }}"
+                class="btn delete-btn">
+
+                🗑 Delete
+
+            </a>
+
         </div>
 
     </div>
 
-    <!-- Search Form -->
+    {% endfor %}
 
-    <form action="/" method="GET" class="search-form">
+{% else %}
 
-        <input
-            type="text"
-            name="search"
-            placeholder="🔍 Search tasks..."
-            value="{{ request.args.get('search', '') }}">
+<div class="empty-state">
 
-        <button type="submit">
-            Search
-        </button>
+    <h3>🎉 No Tasks Found</h3>
 
-    </form>
+    <p>
+        Start by creating your first task.
+    </p>
 
-    <!-- Add Task Form -->
+</div>
 
-    <form action="/" method="POST">
+{% endif %}
 
-        <label for="title">Title</label>
+    </section>
 
-        <input
-            type="text"
-            id="title"
-            name="title"
-            placeholder="Enter task title..."
-            required>
-
-        <label for="description">Description</label>
-
-        <textarea
-            id="description"
-            name="description"
-            rows="5"
-            placeholder="Enter task description..."
-            required></textarea>
-
-        <button type="submit">
-            + Add Task
-        </button>
-
-    </form>
-
-    <h2>📋 Your Tasks</h2>
-
-    {% if tasks %}
-
-        {% for task in tasks %}
-
-        <div class="task-card">
-
-            <div class="task-header">
-
-                <h3>📌 {{ task.title }}</h3>
-
-            </div>
-
-            <p>{{ task.description }}</p>
-
-            <div class="task-footer">
-
-                {% if task.status == "Pending" %}
-
-                    <span class="badge">
-                        🟡 Pending
-                    </span>
-
-                {% else %}
-
-                    <span class="badge completed">
-                        🟢 Completed
-                    </span>
-
-                {% endif %}
-
-                <div class="actions">
-
-                    <a href="{{ url_for('main.toggle_task', id=task.id) }}" class="complete-btn">
-
-                        {% if task.status == "Pending" %}
-                            ✅ Complete
-                        {% else %}
-                            ↩ Pending
-                        {% endif %}
-
-                    </a>
-
-                    <a href="{{ url_for('main.edit_task', id=task.id) }}" class="edit-btn">
-                        ✏ Edit
-                    </a>
-
-                    <a href="{{ url_for('main.delete_task', id=task.id) }}" class="delete-btn">
-                        🗑 Delete
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    {% else %}
-
-        <p>No tasks found.</p>
-
-    {% endif %}
+</div>
 
 </body>
-
 </html>
