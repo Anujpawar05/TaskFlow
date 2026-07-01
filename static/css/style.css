@@ -180,3 +180,21 @@ h2 {
     color: #666;
     font-weight: bold;
 }
+
+.complete-btn {
+    background: #198754;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.complete-btn:hover {
+    background: #157347;
+}
+
+.completed {
+    background: #d1e7dd;
+    color: #0f5132;
+}

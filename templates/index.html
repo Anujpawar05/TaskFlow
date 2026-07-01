@@ -17,24 +17,44 @@
         Organize your daily tasks efficiently
     </p>
 
+    <!-- Dashboard -->
+
     <div class="dashboard">
 
-    <div class="card">
-        <h3>{{ total_tasks }}</h3>
-        <p>Total Tasks</p>
+        <div class="card">
+            <h3>{{ total_tasks }}</h3>
+            <p>Total Tasks</p>
+        </div>
+
+        <div class="card">
+            <h3>{{ pending_tasks }}</h3>
+            <p>Pending</p>
+        </div>
+
+        <div class="card">
+            <h3>{{ completed_tasks }}</h3>
+            <p>Completed</p>
+        </div>
+
     </div>
 
-    <div class="card">
-        <h3>{{ pending_tasks }}</h3>
-        <p>Pending</p>
-    </div>
+    <!-- Search Form -->
 
-    <div class="card">
-        <h3>{{ completed_tasks }}</h3>
-        <p>Completed</p>
-    </div>
+    <form action="/" method="GET" class="search-form">
 
-</div>
+        <input
+            type="text"
+            name="search"
+            placeholder="🔍 Search tasks..."
+            value="{{ request.args.get('search', '') }}">
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+    <!-- Add Task Form -->
 
     <form action="/" method="POST">
 
@@ -68,41 +88,63 @@
 
         {% for task in tasks %}
 
-            <div class="task-card">
+        <div class="task-card">
 
-                <div class="task-header">
-                    <h3>📌 {{ task.title }}</h3>
-                </div>
+            <div class="task-header">
 
-                <p>{{ task.description }}</p>
-
-                <div class="task-footer">
-
-    <span class="badge">
-        🟡 {{ task.status }}
-    </span>
-
-    <div class="actions">
-
-        <a href="/edit/{{ task.id }}" class="edit-btn">
-            ✏ Edit
-        </a>
-
-        <a href="/delete/{{ task.id }}" class="delete-btn">
-            🗑 Delete
-        </a>
-
-    </div>
-
-</div>
+                <h3>📌 {{ task.title }}</h3>
 
             </div>
+
+            <p>{{ task.description }}</p>
+
+            <div class="task-footer">
+
+                {% if task.status == "Pending" %}
+
+                    <span class="badge">
+                        🟡 Pending
+                    </span>
+
+                {% else %}
+
+                    <span class="badge completed">
+                        🟢 Completed
+                    </span>
+
+                {% endif %}
+
+                <div class="actions">
+
+                    <a href="{{ url_for('main.toggle_task', id=task.id) }}" class="complete-btn">
+
+                        {% if task.status == "Pending" %}
+                            ✅ Complete
+                        {% else %}
+                            ↩ Pending
+                        {% endif %}
+
+                    </a>
+
+                    <a href="{{ url_for('main.edit_task', id=task.id) }}" class="edit-btn">
+                        ✏ Edit
+                    </a>
+
+                    <a href="{{ url_for('main.delete_task', id=task.id) }}" class="delete-btn">
+                        🗑 Delete
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
 
         {% endfor %}
 
     {% else %}
 
-        <p>No tasks yet.</p>
+        <p>No tasks found.</p>
 
     {% endif %}
 

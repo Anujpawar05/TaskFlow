@@ -23,7 +23,25 @@ def home():
 
         return redirect("/")
 
-    tasks = Task.query.all()
+    # -------------------------
+    # Search
+    # -------------------------
+
+    search = request.args.get("search", "").strip()
+
+    if search:
+
+        tasks = Task.query.filter(
+            Task.title.ilike(f"%{search}%")
+        ).all()
+
+    else:
+
+        tasks = Task.query.all()
+
+    # -------------------------
+    # Dashboard Statistics
+    # -------------------------
 
     total_tasks = Task.query.count()
 
@@ -73,3 +91,18 @@ def edit_task(id):
         "edit.html",
         task=task
     )
+
+
+@main.route("/toggle/<int:id>")
+def toggle_task(id):
+
+    task = Task.query.get_or_404(id)
+
+    if task.status == "Pending":
+        task.status = "Completed"
+    else:
+        task.status = "Pending"
+
+    db.session.commit()
+
+    return redirect("/")
