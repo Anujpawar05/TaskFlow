@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,77 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
     <h1>TaskFlow</h1>
 
+    <p class="subtitle">
+        Organize your daily tasks efficiently
+    </p>
+
+    <form action="/" method="POST">
+
+        <label for="title">Title</label>
+
+        <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Enter task title..."
+            required>
+
+        <label for="description">Description</label>
+
+        <textarea
+            id="description"
+            name="description"
+            rows="5"
+            placeholder="Enter task description..."
+            required></textarea>
+
+        <button type="submit">
+            + Add Task
+        </button>
+
+    </form>
+
+    <h2>📋 Your Tasks</h2>
+
+    {% if tasks %}
+
+        {% for task in tasks %}
+
+            <div class="task-card">
+
+                <div class="task-header">
+                    <h3>📌 {{ task.title }}</h3>
+                </div>
+
+                <p>{{ task.description }}</p>
+
+                <div class="task-footer">
+
+                    <span class="badge">
+                        🟡 {{ task.status }}
+                    </span>
+
+                    <a href="/delete/{{ task.id }}" class="delete-btn">
+                        🗑 Delete
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No tasks yet.</p>
+
+    {% endif %}
+
 </body>
+
 </html>
