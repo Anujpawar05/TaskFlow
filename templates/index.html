@@ -59,15 +59,23 @@
 
                 <div class="task-footer">
 
-                    <span class="badge">
-                        🟡 {{ task.status }}
-                    </span>
+    <span class="badge">
+        🟡 {{ task.status }}
+    </span>
 
-                    <a href="/delete/{{ task.id }}" class="delete-btn">
-                        🗑 Delete
-                    </a>
+    <div class="actions">
 
-                </div>
+        <a href="/edit/{{ task.id }}" class="edit-btn">
+            ✏ Edit
+        </a>
+
+        <a href="/delete/{{ task.id }}" class="delete-btn">
+            🗑 Delete
+        </a>
+
+    </div>
+
+</div>
 
             </div>
 
